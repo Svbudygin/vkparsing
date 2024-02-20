@@ -35,7 +35,7 @@ async def callback_giveaway(callback_query: types.CallbackQuery, state: FSMConte
         with open('data/data.json') as file:
             lst = json.load(file)
         for text in lst:
-            await callback_query.message.answer(text)
+            await callback_query.message.answer(text[1]+"\n"+text[0][:4000])
 
 
 if __name__ == '__main__':
