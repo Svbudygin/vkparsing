@@ -7,9 +7,10 @@ import functools
 import time
 
 KEY_WORDS = {
-        "Сдам квартиру",
-        # "Аренда"
-    }
+    "Сдам квартиру",
+}
+
+
 def cache_with_timeout(func):
     cache = {}
     last_called = {}
@@ -30,53 +31,30 @@ def cache_with_timeout(func):
     return wrapper
 
 
-@cache_with_timeout
-# def get_rent_news1():
-#     vk_session = vk_api.VkApi(token=token)
-#     KEY_WORDS = {
-#         # "Собственник",
-#         "Сдам квартиру",
-#         "Аренда",
-#     }
-#     vk = vk_session.get_api()
-#
-#     lst = []
-#     for q in KEY_WORDS:
-#         response = vk.newsfeed.search(q=q, count=10)
-#         print(response)
-#         with open('data/data1.json', 'w') as file:
-#             json.dump(list(response["next_from"]), file, ensure_ascii=False)
-#         # with open('data/data2.json', 'w') as file:
-#         #     json.dump(list(response["total_count"]), file, ensure_ascii=False)
-#         with open('data/data3.json', 'w') as file:
-#             json.dump(list(response["count"]), file, ensure_ascii=False)
-#         with open('data/data4.json', 'w') as file:
-#             json.dump(list(response["items"]), file, ensure_ascii=False)
-#         for item in response['items']:
-#             lst.append(item['text'])
-#
-#     with open('data/data.json', 'w') as file:
-#         json.dump(lst, file, ensure_ascii=False)
-#     return 1
-
 # @cache_with_timeout
 def get_rent_news():
     vk_session = vk_api.VkApi(token=token)
     vk = vk_session.get_api()
     lst = []
     for q in KEY_WORDS:
-        response = vk.newsfeed.search(q=q, count=10, extended=1, latitude=55.3, longitude=37.5, radius=5000,
-                                      filters='post',
-                                      author_only=1
+        response = vk.newsfeed.search(q=q, count=200,
+                                      # extended=1,
+                                      # latitude=55.3, longitude=37.5,
+                                      # radius=50,
+                                      # filters='post',
+                                      # author_only=1
                                       )
+        with open('data/response.json', 'w') as file:
+            json.dump(response, file, ensure_ascii=False)
         for item in response['items']:
-            # if item['from_id'] > 0:
-            lst.append([item.get('text'), "https://vk.com/id" + str(item['from_id'])[1:]])
-            print(item['from_id'])
-        print(q)
+            if item['from_id'] > 0:
+                user_info = vk.users.get(user_ids=item['from_id'])
+                print(user_info, item['from_id'], item['owner_id'])
+                lst.append([item.get('text'), "https://vk.com/id" + str(item['owner_id'])])
+            else:
+                print("опять группа")
     with open('data/data.json', 'w') as file:
         json.dump(lst, file, ensure_ascii=False)
-    print(1234)
     return 1
 
 
