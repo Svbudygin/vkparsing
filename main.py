@@ -42,7 +42,7 @@ def get_rent_news():
             if item['from_id'] > 0:
                 user_info = vk.users.get(user_ids=item['from_id'], fields='city')
                 try:
-                    if user_info[0]['city']['title'] == "Москва":
+                    if user_info[0]['city']['title'] == "Москва" and "334352327" != str(item['owner_id']):
                         lst.append([item.get('text'), "https://vk.com/id" + str(item['owner_id'])])
                 except KeyError:
                     pass
@@ -51,5 +51,25 @@ def get_rent_news():
     return 1
 
 
+def get_rent_news1(name):
+    vk_session = vk_api.VkApi(token=token)
+    vk = vk_session.get_api()
+    lst = []
+    q = name
+    response = vk.newsfeed.search(q=q, count=200)
+    for item in response['items']:
+        if item['from_id'] > 0:
+            user_info = vk.users.get(user_ids=item['from_id'], fields='city')
+            try:
+                if user_info[0]['city']['title'] == "Москва" and "334352327" != str(item['owner_id']):
+                    lst.append([item.get('text'), "https://vk.com/id" + str(item['owner_id'])])
+            except KeyError:
+                pass
+    with open(f'data/data{name}.json', 'w') as file:
+        json.dump(lst, file, ensure_ascii=False)
+    return 1
+
+
 if __name__ == "__main__":
+    get_rent_news()
     pass
